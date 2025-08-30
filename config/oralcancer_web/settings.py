@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 
 # Build paths inside the project
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-oral-cancer-detection-web-app-2024'
@@ -27,10 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Local apps
-    'accounts',
-    'detection',
-    'dashboard',
-    'pages',
+    'apps.accounts',
+    'apps.detection',
+    'apps.dashboard',
+    'apps.pages',
 ]
 
 MIDDLEWARE = [
@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'oralcancer_web.urls'
+ROOT_URLCONF = 'config.oralcancer_web.urls'
 
 TEMPLATES = [
     {
@@ -62,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'oralcancer_web.wsgi.application'
+WSGI_APPLICATION = 'config.oralcancer_web.wsgi.application'
 
 # Database
 DATABASES = {

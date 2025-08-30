@@ -38,6 +38,7 @@ body {
     background-color: #f5f7fa;
     line-height: 1.6;
     overflow-x: hidden;
+    padding-top: 80px; /* Account for fixed navbar */
 }
 
 /* Typography */
@@ -59,6 +60,11 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
 }
 
 #mainNav.navbar-shrink {
@@ -109,6 +115,8 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
     overflow: hidden;
+    margin-top: -80px; /* Offset body padding for hero sections */
+    padding-top: 80px;
 }
 
 .hero-section::before {
@@ -490,6 +498,22 @@ footer .social-links a:hover {
 
 .animate-fadeInUp {
     animation: fadeInUp 0.6s ease-out;
+}
+
+/* Page Layout Fixes */
+main {
+    min-height: calc(100vh - 80px);
+}
+
+/* Ensure proper spacing for non-hero sections */
+section:not(.hero-section) {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* Fix for pages with background colors at top */
+section:first-child:not(.hero-section) {
+    padding-top: 5rem;
 }
 
 /* Gradient Text */

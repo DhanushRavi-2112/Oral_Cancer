@@ -157,10 +157,19 @@ static_root/
 
 # Output directories
 outputs/
+results/
 
 # Data directories
 data/
 dataset/
+
+# Test outputs
+tests/test_results/
+tests/.pytest_cache/
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
 
 # Temporary files
 *.tmp

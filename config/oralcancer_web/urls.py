@@ -10,12 +10,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Authentication
-    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('apps.accounts.urls')),
     
     # Apps
-    path('', include('pages.urls')),
-    path('detection/', include('detection.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('', include('apps.pages.urls')),
+    path('detection/', include('apps.detection.urls')),
+    path('dashboard/', include('apps.dashboard.urls')),
     
 ]
 
@@ -25,8 +25,8 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Custom error pages
-handler404 = 'pages.views.error_404'
-handler500 = 'pages.views.error_500'
+handler404 = 'apps.pages.views.error_404'
+handler500 = 'apps.pages.views.error_500'
 
 # Admin site customization
 admin.site.site_header = "OralScan AI Administration"
