@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Statistics - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold">Your Statistics</h1>
+            <p class="lead text-muted">Detailed overview of your detection history and patterns</p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h3 class="h4">{{ user.detections.count }}</h3>
+                    <p class="text-muted">Total Detections</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-percent fa-3x text-success mb-3"></i>
+                    <h3 class="h4">94%</h3>
+                    <p class="text-muted">AI Accuracy Rate</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-bolt fa-3x text-warning mb-3"></i>
+                    <h3 class="h4">&lt;30s</h3>
+                    <p class="text-muted">Avg Analysis Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Stats -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="card-title mb-0">Detection Overview</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.detections.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Image</th>
+                                        <th>Result</th>
+                                        <th>Confidence</th>
+                                        <th>Model Used</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detection in user.detections.all|slice:":10" %}
+                                        <tr>
+                                            <td>{{ detection.created_at|date:"M d, Y" }}</td>
+                                            <td>{{ detection.image_name|truncatechars:20 }}</td>
+                                            <td>
+                                                {% if detection.result == 'cancer' %}
+                                                    <span class="badge bg-warning">Needs Attention</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Healthy</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ detection.confidence|floatformat:1 }}%</td>
+                                            <td>{{ detection.get_model_used_display }}</td>
+                                            <td>
+                                                <a href="{% url 'detection:result' detection.id %}" 
+                                                   class="btn btn-outline-primary btn-sm">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No data to display</h5>
+                            <p class="text-muted">Upload some images to see your statistics</p>
+                            <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Start Detecting
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

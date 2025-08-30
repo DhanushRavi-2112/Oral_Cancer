@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}OralScan AI - Advanced Oral Cancer Detection{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6 hero-content">
+                <h1 class="display-4 fw-bold text-white mb-4 animate__animated animate__fadeInUp">
+                    AI-Powered Oral Cancer Detection
+                </h1>
+                <p class="lead text-white-50 mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Revolutionizing early detection with advanced deep learning technology. 
+                    Get instant, accurate analysis with our state-of-the-art AI models.
+                </p>
+                <div class="d-flex gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'detection:upload' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-upload me-2"></i>Start Detection
+                        </a>
+                        <a href="{% url 'dashboard:home' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'accounts:signup' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Get Started Free
+                        </a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Key Stats -->
+                <div class="row mt-5 text-white animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="col-4 text-center">
+                        <h3 class="fw-bold mb-0">94%+</h3>
+                        <p class="small opacity-75">Accuracy</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h3 class="fw-bold mb-0"><30s</h3>
+                        <p class="small opacity-75">Analysis Time</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h3 class="fw-bold mb-0">24/7</h3>
+                        <p class="small opacity-75">Available</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image text-center">
+                    <img src="{% static 'images/hero-medical.svg' %}" alt="Medical AI" class="img-fluid animate__animated animate__fadeInRight">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Why Choose OralScan AI?</h2>
+            <p class="lead text-muted">Advanced technology meets healthcare excellence</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-brain fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Dual AI Models</h5>
+                        <p class="card-text text-muted">
+                            Ensemble learning with VGG16 and RegNetY-320 for maximum accuracy
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-success"></i>
+                        </div>
+                        <h5 class="card-title">HIPAA Compliant</h5>
+                        <p class="card-text text-muted">
+                            Your data is encrypted and secure with medical-grade protection
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-bolt fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Instant Results</h5>
+                        <p class="card-text text-muted">
+                            Get comprehensive analysis in under 30 seconds
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-bar fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Detailed Reports</h5>
+                        <p class="card-text text-muted">
+                            Comprehensive analysis with confidence scores and recommendations
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead text-muted">Simple, fast, and accurate detection in 3 steps</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number">
+                        <span class="badge rounded-pill bg-primary fs-3 px-4 py-3 mb-3">1</span>
+                    </div>
+                    <h4>Upload Image</h4>
+                    <p class="text-muted">
+                        Take a clear photo of the oral cavity and upload it to our secure platform
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number">
+                        <span class="badge rounded-pill bg-primary fs-3 px-4 py-3 mb-3">2</span>
+                    </div>
+                    <h4>AI Analysis</h4>
+                    <p class="text-muted">
+                        Our dual AI models analyze the image using advanced deep learning
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-number">
+                        <span class="badge rounded-pill bg-primary fs-3 px-4 py-3 mb-3">3</span>
+                    </div>
+                    <h4>Get Results</h4>
+                    <p class="text-muted">
+                        Receive instant results with confidence scores and recommendations
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket me-2"></i>Start Your Free Trial
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold">10,000+</h3>
+                    <p class="text-muted">Healthcare Professionals</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-image fa-3x text-success mb-3"></i>
+                    <h3 class="fw-bold">50,000+</h3>
+                    <p class="text-muted">Images Analyzed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-hospital fa-3x text-info mb-3"></i>
+                    <h3 class="fw-bold">100+</h3>
+                    <p class="text-muted">Partner Clinics</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-globe fa-3x text-warning mb-3"></i>
+                    <h3 class="fw-bold">25+</h3>
+                    <p class="text-muted">Countries Served</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Practice?</h2>
+        <p class="lead mb-4">
+            Join thousands of healthcare professionals using AI for early detection
+        </p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{% url 'accounts:signup' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Sign Up Free
+            </a>
+            <a href="{% url 'pages:about' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-info-circle me-2"></i>Learn More
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scroll for navigation
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Counter animation
+function animateValue(element, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        element.innerHTML = Math.floor(progress * (end - start) + start);
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+// Trigger counter animation when in view
+const observerOptions = {
+    threshold: 0.7
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const counters = entry.target.querySelectorAll('h3');
+            counters.forEach(counter => {
+                const value = parseInt(counter.innerText.replace(/[^0-9]/g, ''));
+                if (value) {
+                    animateValue(counter, 0, value, 2000);
+                }
+            });
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.stat-box').forEach(el => {
+    observer.observe(el);
+});
+</script>
+{% endblock %}

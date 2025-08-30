@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold">Welcome back, {{ user.username }}!</h1>
+                    <p class="lead text-muted">Monitor your oral health with AI-powered detection</p>
+                </div>
+                <div>
+                    <a href="{% url 'detection:upload' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-upload me-2"></i>New Detection
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-image fa-3x text-primary mb-3"></i>
+                    <h3 class="h4">{{ user.detections.count|default:0 }}</h3>
+                    <p class="text-muted mb-0">Total Scans</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h3 class="h4">{{ user.detections.all|length }}</h3>
+                    <p class="text-muted mb-0">Healthy Results</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h3 class="h4">0</h3>
+                    <p class="text-muted mb-0">Needs Attention</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-info mb-3"></i>
+                    <h3 class="h4">{{ user.date_joined|timesince }}</h3>
+                    <p class="text-muted mb-0">Member Since</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Recent Detections</h5>
+                        <a href="{% url 'detection:history' %}" class="btn btn-outline-primary btn-sm">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if user.detections.all %}
+                        <div class="list-group list-group-flush">
+                            {% for detection in user.detections.all|slice:":5" %}
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <img src="{{ detection.image.url }}" alt="Detection" 
+                                                 class="rounded" width="60" height="60" style="object-fit: cover;">
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="mb-1">{{ detection.image_name }}</h6>
+                                            <p class="mb-1 text-muted">
+                                                <small>{{ detection.created_at|timesince }} ago</small>
+                                            </p>
+                                        </div>
+                                        <div class="col-auto">
+                                            {% if detection.result == 'cancer' %}
+                                                <span class="badge bg-warning">Needs Attention</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Healthy</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-auto">
+                                            <a href="{% url 'detection:result' detection.id %}" 
+                                               class="btn btn-outline-primary btn-sm">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No detections yet</h5>
+                            <p class="text-muted">Upload your first image to get started</p>
+                            <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Image
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>New Detection
+                        </a>
+                        <a href="{% url 'detection:history' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-history me-2"></i>View History
+                        </a>
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tips -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="card-title mb-0">Health Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-lightbulb text-warning me-2"></i>Daily Oral Care</h6>
+                        <p class="small text-muted mb-0">Brush twice daily and floss regularly to maintain oral health.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-ban text-danger me-2"></i>Avoid Risk Factors</h6>
+                        <p class="small text-muted mb-0">Limit tobacco and alcohol use, which increase cancer risk.</p>
+                    </div>
+                    <div>
+                        <h6><i class="fas fa-calendar-check text-success me-2"></i>Regular Checkups</h6>
+                        <p class="small text-muted mb-0">Visit your dentist every 6 months for professional screening.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

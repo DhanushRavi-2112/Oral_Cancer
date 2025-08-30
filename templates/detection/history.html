@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detection History - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-5 fw-bold">Detection History</h1>
+                    <p class="lead text-muted">Your complete AI analysis records</p>
+                </div>
+                <div>
+                    <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>New Detection
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-chart-bar fa-2x text-primary mb-2"></i>
+                            <h4>{{ total_count }}</h4>
+                            <p class="text-muted mb-0">Total Scans</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h4>{{ healthy_count }}</h4>
+                            <p class="text-muted mb-0">Healthy Results</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                            <h4>{{ cancer_count }}</h4>
+                            <p class="text-muted mb-0">Needs Attention</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                            <h4>94%</h4>
+                            <p class="text-muted mb-0">AI Accuracy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="filter" class="form-label">Filter Results</label>
+                            <select name="filter" id="filter" class="form-select">
+                                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Results</option>
+                                <option value="cancer" {% if filter_type == 'cancer' %}selected{% endif %}>Cancer Detected</option>
+                                <option value="healthy" {% if filter_type == 'healthy' %}selected{% endif %}>Healthy</option>
+                                <option value="reviewed" {% if filter_type == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" name="date_from" id="date_from" class="form-control" 
+                                   value="{{ request.GET.date_from }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" name="date_to" id="date_to" class="form-control" 
+                                   value="{{ request.GET.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter me-2"></i>Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Detections List -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    {% if detections %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0">Image</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0">Result</th>
+                                        <th class="border-0">Confidence</th>
+                                        <th class="border-0">Model</th>
+                                        <th class="border-0">Status</th>
+                                        <th class="border-0">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detection in detections %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ detection.image.url }}" alt="{{ detection.image_name }}" 
+                                                         class="rounded me-3" width="50" height="50" style="object-fit: cover;">
+                                                    <div>
+                                                        <h6 class="mb-0">{{ detection.image_name|truncatechars:20 }}</h6>
+                                                        <small class="text-muted">{{ detection.image.size|filesizeformat }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <div>{{ detection.created_at|date:"M d, Y" }}</div>
+                                                    <small class="text-muted">{{ detection.created_at|time:"H:i" }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if detection.result == 'cancer' %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>Attention
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Healthy
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress me-2" style="width: 60px; height: 8px;">
+                                                        <div class="progress-bar bg-primary" 
+                                                             style="width: {{ detection.confidence }}%"></div>
+                                                    </div>
+                                                    <span class="small">{{ detection.confidence|floatformat:1 }}%</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ detection.get_model_used_display }}</span>
+                                            </td>
+                                            <td>
+                                                {% if detection.is_reviewed %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Reviewed
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-clock me-1"></i>Pending
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{% url 'detection:result' detection.id %}" 
+                                                       class="btn btn-outline-primary" title="View Result">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    {% if detection.result == 'cancer' %}
+                                                        <button class="btn btn-outline-warning" title="Important" 
+                                                                onclick="showWarning('{{ detection.id }}')">
+                                                            <i class="fas fa-exclamation-triangle"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination would go here if needed -->
+                        
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No detections found</h5>
+                            <p class="text-muted">
+                                {% if filter_type != 'all' %}
+                                    Try adjusting your filters or 
+                                    <a href="{% url 'detection:history' %}">view all detections</a>
+                                {% else %}
+                                    Upload your first image to get started
+                                {% endif %}
+                            </p>
+                            <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Image
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Warning Modal for Cancer Cases -->
+<div class="modal fade" id="warningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Medical Attention Required
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-bold">This detection indicates potential cancerous tissue.</p>
+                <p class="mb-3">
+                    Please schedule an appointment with a qualified healthcare professional 
+                    for proper diagnosis and treatment as soon as possible.
+                </p>
+                <div class="bg-light p-3 rounded">
+                    <h6>Immediate Actions:</h6>
+                    <ul class="mb-0">
+                        <li>Contact an oral surgeon or oncologist</li>
+                        <li>Schedule appointment within 1-2 weeks</li>
+                        <li>Bring this AI analysis report</li>
+                        <li>Don't delay - early treatment is crucial</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showWarning(detectionId) {
+    const modal = new bootstrap.Modal(document.getElementById('warningModal'));
+    modal.show();
+}
+
+// Auto-submit form when filter changes
+document.getElementById('filter').addEventListener('change', function() {
+    this.form.submit();
+});
+</script>
+{% endblock %}

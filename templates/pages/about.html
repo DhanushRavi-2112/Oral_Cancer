@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold">About OralScan AI</h1>
+                <p class="lead text-muted">Revolutionizing oral cancer detection through artificial intelligence</p>
+            </div>
+
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    <h2 class="h3 mb-4">Our Mission</h2>
+                    <p class="mb-4">
+                        At OralScan AI, we're dedicated to improving early detection of oral cancer through cutting-edge 
+                        artificial intelligence technology. Our dual-model approach combining VGG16 and RegNetY-320 
+                        architectures provides healthcare professionals with reliable, fast, and accurate diagnostic support.
+                    </p>
+
+                    <h2 class="h3 mb-4">Technology</h2>
+                    <p class="mb-4">
+                        Our platform leverages ensemble learning techniques, combining multiple deep learning models 
+                        to achieve over 94% accuracy in oral cancer detection. The system processes images in under 30 seconds 
+                        while maintaining the highest standards of medical data security and HIPAA compliance.
+                    </p>
+
+                    <h2 class="h3 mb-4">Impact</h2>
+                    <p class="mb-0">
+                        With over 50,000 images analyzed and partnerships with 100+ clinics worldwide, OralScan AI is 
+                        making early detection more accessible and reliable for healthcare professionals globally.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{% url 'pages:contact' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

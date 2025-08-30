@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detection Result - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">Analysis Complete</h1>
+                <p class="lead text-muted">Your AI-powered oral cancer detection result</p>
+            </div>
+
+            <!-- Main Result Card -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-5">
+                    <div class="row">
+                        <!-- Image -->
+                        <div class="col-lg-4 text-center mb-4 mb-lg-0">
+                            <img src="{{ detection.image.url }}" alt="Analyzed Image" 
+                                 class="img-fluid rounded shadow">
+                            <p class="text-muted small mt-2">{{ detection.image_name }}</p>
+                        </div>
+                        
+                        <!-- Results -->
+                        <div class="col-lg-8">
+                            <!-- Primary Result -->
+                            <div class="d-flex align-items-center mb-4">
+                                {% if detection.result == 'cancer' %}
+                                    <div class="result-icon text-warning me-3">
+                                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-warning mb-1">Attention Required</h2>
+                                        <p class="text-muted mb-0">AI detected potential cancerous tissue</p>
+                                    </div>
+                                {% else %}
+                                    <div class="result-icon text-success me-3">
+                                        <i class="fas fa-check-circle fa-3x"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-success mb-1">Healthy Tissue</h2>
+                                        <p class="text-muted mb-0">No signs of cancerous tissue detected</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Confidence Metrics -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-sm-6">
+                                    <div class="card bg-light border-0">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-primary mb-1">{{ detection.confidence|floatformat:1 }}%</h4>
+                                            <p class="small text-muted mb-0">Overall Confidence</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card bg-light border-0">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-info mb-1">{{ detection.processing_time|floatformat:2 }}s</h4>
+                                            <p class="small text-muted mb-0">Analysis Time</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Model Information -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-2">Analysis Method:</h6>
+                                <span class="badge bg-primary">{{ detection.get_model_used_display }}</span>
+                                
+                                {% if detection.model_used == 'ensemble' %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <strong>VGG16:</strong> {{ detection.vgg16_confidence|default:0|floatformat:1 }}% confidence |
+                                            <strong>RegNet:</strong> {{ detection.regnet_confidence|default:0|floatformat:1 }}% confidence
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Probability Breakdown -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3">Probability Breakdown:</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small">Healthy</span>
+                                            <span class="small fw-bold text-success">{{ detection.healthy_probability|floatformat:1 }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: {{ detection.healthy_probability }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small">Cancer</span>
+                                            <span class="small fw-bold text-warning">{{ detection.cancer_probability|floatformat:1 }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: {{ detection.cancer_probability }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Recommendations
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        {% for recommendation in recommendations %}
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>{{ recommendation }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Clinical Notes -->
+            {% if detection.notes %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-notes-medical text-info me-2"></i>Clinical Notes
+                    </h5>
+                    <p class="mb-0">{{ detection.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Detection Details -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Detection Details
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Detection ID:</strong></p>
+                            <p class="text-muted small">{{ detection.id }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Analysis Date:</strong></p>
+                            <p class="text-muted small">{{ detection.created_at|date:"F d, Y - H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>User:</strong></p>
+                            <p class="text-muted small">{{ detection.user.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Status:</strong></p>
+                            {% if detection.is_reviewed %}
+                                <span class="badge bg-success">Reviewed</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending Review</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{% url 'detection:upload' %}" class="btn btn-primary">
+                    <i class="fas fa-upload me-2"></i>New Analysis
+                </a>
+                <a href="{% url 'detection:history' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-history me-2"></i>View History
+                </a>
+                <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-2"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Important Notice Modal for Cancer Detection -->
+{% if detection.result == 'cancer' %}
+<div class="modal fade" id="importantNoticeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Important Medical Notice
+                </h5>
+            </div>
+            <div class="modal-body">
+                <p class="fw-bold">This AI analysis is for screening purposes only.</p>
+                <p class="mb-3">
+                    The detection of potential cancerous tissue requires immediate consultation 
+                    with a qualified healthcare professional for proper diagnosis and treatment.
+                </p>
+                <div class="bg-light p-3 rounded">
+                    <h6>Next Steps:</h6>
+                    <ul class="mb-0">
+                        <li>Schedule an appointment with an oral surgeon or oncologist</li>
+                        <li>Bring this analysis report to your appointment</li>
+                        <li>Follow up within 1-2 weeks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if detection.result == 'cancer' %}
+<script>
+// Show important notice modal for cancer detection
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = new bootstrap.Modal(document.getElementById('importantNoticeModal'));
+    modal.show();
+});
+</script>
+{% endif %}
+{% endblock %}

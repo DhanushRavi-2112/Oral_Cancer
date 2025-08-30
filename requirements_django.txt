@@ -1,0 +1,68 @@
+# Django Web Application Requirements
+# Install with: pip install -r requirements_django.txt
+
+# Core Django
+django>=4.2,<5.0
+django-environ==0.11.2
+python-decouple==3.8
+
+# Authentication
+django-allauth==0.57.0
+
+# Forms and UI
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+django-widget-tweaks==1.5.0
+
+# Database
+psycopg2-binary==2.9.9  # PostgreSQL support
+
+# Static Files
+whitenoise==6.6.0
+django-compressor==4.4
+
+# Image Processing
+Pillow>=10.0.0
+
+# API Development
+djangorestframework==3.14.0
+django-cors-headers==4.3.0
+
+# Security
+django-ratelimit==4.1.0
+django-csp==3.7
+
+# Development Tools
+django-extensions==3.2.3
+django-debug-toolbar==4.2.0
+ipython==8.17.2
+
+# Production Server
+gunicorn==21.2.0
+dj-database-url==2.1.0
+
+# Monitoring and Logging
+django-prometheus==2.3.1
+sentry-sdk==1.39.1
+
+# Task Queue (optional)
+celery==5.3.4
+redis==5.0.1
+
+# Testing
+pytest-django==4.7.0
+factory-boy==3.3.0
+coverage==7.3.2
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.14
+
+# Utilities
+python-dotenv==1.0.0
+django-cleanup==8.0.0  # Auto-delete orphaned files
+django-storages==1.14.2  # For cloud storage (S3, etc.)
+
+# All ML requirements from main project
+# Include the existing requirements.txt
+-r requirements.txt

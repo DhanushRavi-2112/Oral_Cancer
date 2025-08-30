@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload Image - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">Oral Cancer Detection</h1>
+                <p class="lead text-muted">Upload an image for instant AI analysis</p>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+                        
+                        <!-- Model Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-brain me-2"></i>Select Analysis Model
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check model-card p-3 rounded">
+                                        <input class="form-check-input" type="radio" name="model_choice" 
+                                               id="ensemble" value="ensemble" checked>
+                                        <label class="form-check-label d-block" for="ensemble">
+                                            <strong>Ensemble AI</strong>
+                                            <small class="text-muted d-block">Highest accuracy (94%+)</small>
+                                            <span class="badge bg-success mt-1">Recommended</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check model-card p-3 rounded">
+                                        <input class="form-check-input" type="radio" name="model_choice" 
+                                               id="vgg16" value="vgg16">
+                                        <label class="form-check-label d-block" for="vgg16">
+                                            <strong>VGG16</strong>
+                                            <small class="text-muted d-block">Fast & reliable (92.5%)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check model-card p-3 rounded">
+                                        <input class="form-check-input" type="radio" name="model_choice" 
+                                               id="regnet" value="regnet">
+                                        <label class="form-check-label d-block" for="regnet">
+                                            <strong>RegNetY-320</strong>
+                                            <small class="text-muted d-block">Efficient (91.8%)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Area -->
+                        <div class="upload-area mb-4" id="uploadArea">
+                            <input type="file" name="image" id="id_image" class="d-none" 
+                                   accept="image/*" required>
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4 class="mb-3">Drag & Drop Image Here</h4>
+                            <p class="text-muted mb-3">or</p>
+                            <button type="button" class="btn btn-primary" 
+                                    onclick="document.getElementById('id_image').click()">
+                                <i class="fas fa-folder-open me-2"></i>Browse Files
+                            </button>
+                            <p class="text-muted mt-3 small">
+                                Supported formats: JPG, PNG, BMP (Max 10MB)
+                            </p>
+                            {% if form.image.errors %}
+                                <div class="text-danger mt-2">{{ form.image.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="d-none mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <img id="previewImg" class="img-fluid rounded" alt="Preview">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h6 id="fileName" class="mb-2"></h6>
+                                            <p id="fileSize" class="text-muted small mb-2"></p>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="removeImage()">
+                                                <i class="fas fa-times me-1"></i>Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clinical Notes (Optional) -->
+                        <div class="mb-4">
+                            <label for="id_notes" class="form-label">
+                                <i class="fas fa-notes-medical me-2"></i>Clinical Notes (Optional)
+                            </label>
+                            <textarea class="form-control" id="id_notes" name="notes" rows="3" 
+                                      placeholder="Add any relevant patient history or observations..."></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                                <i class="fas fa-microscope me-2"></i>Analyze Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Guidelines -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Image Guidelines
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>Clear, well-lit images</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Focus on the affected area</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Any image size (automatically optimized)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-times text-danger me-2"></i>Blurry or dark images</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Images with filters</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Irrelevant content</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Detections -->
+            {% if recent_detections %}
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-history text-primary me-2"></i>Recent Detections
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Result</th>
+                                    <th>Confidence</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detection in recent_detections %}
+                                <tr>
+                                    <td>{{ detection.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ detection.get_result_color }}">
+                                            {{ detection.get_result_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ detection.get_confidence_percentage }}</td>
+                                    <td>
+                                        <a href="{% url 'detection:result' detection.id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Analyzing Image...</h5>
+                <p class="text-muted mb-0">This may take a few seconds</p>
+                <div class="progress mt-3" style="height: 5px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover, .upload-area.dragging {
+    border-color: #007bff;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.upload-area #id_image {
+    display: none;
+}
+
+.upload-icon i {
+    font-size: 3rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+/* Style model cards */
+.model-card {
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.model-card:hover {
+    border-color: #007bff;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.form-check-input:checked ~ .form-check-label .model-card {
+    border-color: #007bff;
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.model-card .form-check-input {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+#imagePreview img {
+    max-height: 150px;
+    object-fit: cover;
+}
+
+.guidelines ul li i.fa-check {
+    color: #28a745;
+}
+
+.guidelines ul li i.fa-times {
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// File upload handling
+const uploadArea = document.getElementById('uploadArea');
+const imageInput = document.getElementById('id_image');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+const fileName = document.getElementById('fileName');
+const fileSize = document.getElementById('fileSize');
+const submitBtn = document.getElementById('submitBtn');
+const uploadForm = document.getElementById('uploadForm');
+
+// Drag and drop
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+        uploadArea.classList.add('dragging');
+    });
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+        uploadArea.classList.remove('dragging');
+    });
+});
+
+uploadArea.addEventListener('drop', handleDrop);
+
+function handleDrop(e) {
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+}
+
+imageInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+function handleFiles(files) {
+    if (files.length > 0) {
+        const file = files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid File',
+                text: 'Please select an image file.'
+            });
+            return;
+        }
+        
+        // Validate file size (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File Too Large',
+                text: 'Please select an image smaller than 10MB.'
+            });
+            return;
+        }
+        
+        // Display preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            
+            uploadArea.classList.add('d-none');
+            imagePreview.classList.remove('d-none');
+            submitBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+        
+        // Update file input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        imageInput.files = dataTransfer.files;
+    }
+}
+
+function removeImage() {
+    imageInput.value = '';
+    uploadArea.classList.remove('d-none');
+    imagePreview.classList.add('d-none');
+    submitBtn.disabled = true;
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Form submission
+uploadForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    // Show loading modal
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // Submit form
+    uploadForm.submit();
+});
+</script>
+{% endblock %}

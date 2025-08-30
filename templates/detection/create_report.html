@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Report - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">Create Medical Report</h1>
+                <p class="lead text-muted">Generate a detailed clinical report for this detection</p>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Detection Details</h6>
+                                <p><strong>Date:</strong> {{ detection.created_at|date:"F d, Y - H:i" }}</p>
+                                <p><strong>Result:</strong> 
+                                    <span class="badge bg-{% if detection.result == 'cancer' %}warning{% else %}success{% endif %}">
+                                        {{ detection.get_result_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Confidence:</strong> {{ detection.confidence|floatformat:1 }}%</p>
+                            </div>
+                            <div class="col-md-6">
+                                <img src="{{ detection.image.url }}" alt="Detection Image" 
+                                     class="img-fluid rounded shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="clinical_findings" class="form-label fw-bold">
+                                <i class="fas fa-stethoscope me-2"></i>Clinical Findings
+                            </label>
+                            <textarea name="clinical_findings" id="clinical_findings" class="form-control" 
+                                      rows="4" required placeholder="Describe clinical observations and findings..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="recommendations" class="form-label fw-bold">
+                                <i class="fas fa-clipboard-list me-2"></i>Recommendations
+                            </label>
+                            <textarea name="recommendations" id="recommendations" class="form-control" 
+                                      rows="4" required placeholder="Provide treatment recommendations..."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="follow_up_required" 
+                                           id="follow_up_required">
+                                    <label class="form-check-label" for="follow_up_required">
+                                        Follow-up Required
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="follow_up_date" class="form-label">Follow-up Date</label>
+                                <input type="date" name="follow_up_date" id="follow_up_date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="smoking_history" 
+                                           id="smoking_history">
+                                    <label class="form-check-label" for="smoking_history">
+                                        Smoking History
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="alcohol_use" 
+                                           id="alcohol_use">
+                                    <label class="form-check-label" for="alcohol_use">
+                                        Alcohol Use
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="family_history" 
+                                           id="family_history">
+                                    <label class="form-check-label" for="family_history">
+                                        Family History
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="previous_lesions" 
+                                           id="previous_lesions">
+                                    <label class="form-check-label" for="previous_lesions">
+                                        Previous Lesions
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Report
+                            </button>
+                            <a href="{% url 'detection:result' detection.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Result
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
